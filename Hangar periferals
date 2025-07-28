@@ -1,0 +1,62 @@
+#d0 = input from main controller
+#d1 = horn
+#d2 = flashing light
+#d3 = Lights
+#d4 = Inner door
+#d5 = Airlock Gate
+
+main:
+l r0 d0 Setting
+beq r0 1 mode1 #outside pressure
+beq r0 2 mode2 #pressurising
+beq r0 3 mode3 #inside pressure
+beq r0 4 mode4 #depressurising
+
+mode1:
+s d5 Open 1 #opens gate
+s d4 Open 0 #closes inner door
+s d4 Lock 1 #locks inner door
+s d3 Color 3 #makes lights orange
+s d2 On 0 #switches off flashing lights
+s d1 On 0 #switches off horn
+j main
+
+mode2:
+s d5 Open 0 #closes gate
+s d5 Lock 1 #locks gate
+s d4 Open 0 #closes inner door
+s d4 Lock 1 #locks inner door
+s d3 Color 1 #makes lights grey
+s d2 On 1 #switches on flashing lights
+s d1 On 1 #switches on horn
+j main
+
+mode3:
+s d5 Open 0 #closes gate
+s d5 Lock 1 #locks gate
+s d4 Lock 0 #unlocks inner door
+s d3 Color 6 #makes lights white
+s d2 On 0 #switches off flashing lights
+s d1 On 0 #switches off horn
+j main
+
+mode4:
+s d3 Color 4 #makes lights red
+s d2 On 1 #switches on flashing lights
+s d1 On 1 #switches on horn
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+s d5 Open 0 #closes gate
+s d5 Lock 1 #locks gate
+s d4 Open 0 #closes inner door
+s d4 Lock 1 #locks inner door
+j main
+
