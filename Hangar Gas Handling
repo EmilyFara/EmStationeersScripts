@@ -1,0 +1,49 @@
+#d0 gas sensor
+#d1 mode selector memory
+#d2 cool valve
+#d3 heat valve
+#d4 filter valve
+
+move r6 291
+move r7 298
+
+start:
+beq d1 3 mode3
+
+s d2 On 0
+s d2 Lock 1
+s d3 On 0
+s d3 Lock 1
+s d4 On 0
+s d4 Lock 1
+
+j start
+
+mode3:
+s d2 Lock 0
+s d3 Lock 0
+s d4 Lock 0
+l r0 d0 Temperature
+
+bgt r0 r6 heaton
+blt r0 r6 heatoff
+
+heaton:
+s d3 On 1
+j cool
+
+heatoff:
+s d3 On 0
+j cool
+
+cool:
+bgt r0 r7 cooloff
+blt r0 r7 coolon
+
+cooloff:
+s d2 On 0
+j start
+
+coolon:
+s d2 On 1
+j start
