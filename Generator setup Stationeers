@@ -1,0 +1,65 @@
+#Generator setup
+
+#Fuel Pressure Regulator : 0,1
+
+#Fuel 50/50 N2/O
+#Fuel 33/67 O/H
+
+
+
+
+
+
+start:
+
+l r0 d0 Ratio #load battery % from batch reader ratio 0,0-1,0
+l r1 d1 Temperature #Read temperature from Gas Sensor
+
+#aliases
+alias BatPerc r0
+alias rTemp r1
+alias coolPpSs r4
+alias MinTemp r6
+alias coola r7
+alias genoo r8
+
+#fixed variables
+move MinTemp 296
+move startpc 0,4
+move stoppc 0,95
+
+
+#cooling control
+blt rTemp MinTemp cool_off #If roomtemp < mintemp no cool
+bgt rTemp MinTemp cool_on #If roomtemp > mintemp cooling on
+
+cool_off:
+move coola 0
+j coolset
+
+cool_on:
+move coola 1
+j coolset
+
+coolset:
+s d4 On coola #writes to device 4 either on or off
+j power
+
+#on/off status generator according to power in batteries
+power:
+blt BatPerc startpc startgn #If battery percentage is below 40% go to start generator
+bgt BatPerc stoppc stopgn #If battery percentage is above 95% go to stop generator
+j genact
+
+startgn:
+move genoo 1
+j genact
+
+stopgn:
+move genoo 0
+j genact
+
+genact:
+s d5 On genoo #writes to device 5 (generator) either on or off
+
+j start
