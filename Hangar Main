@@ -1,0 +1,78 @@
+#d0 gas sensor Pressure in kPa
+#d1 mode select for other systems
+#d2 vent to outside
+#d3 vent to storage
+#d4 batch reader from button
+#d5 atmos storage tank
+
+l r1 d1 Setting
+beq r1 1 mode1
+beq r1 2 mode2select
+beq r1 3 mode3
+beq r1 4 mode4
+
+mode1: #external atmosphere
+s d1 Setting 1 #sets mode 1 to surrounding devices
+l r4 d4 Setting
+beq r4 1 mode2
+s d2 On 0 #switches outside vent off
+s d2 Mode 1 #sets outside vent to blow out
+s d3 On 0 #switches inside vent off
+s d3 Mode 0 #sets inside vent to storage
+j mode1
+
+mode2: #pressurising to internal
+s d1 Setting 2 #sets mode 2 to surrounding devices
+m2depre:
+s d2 Mode 1 #sets outside vent to blow off
+s d2 On 1 #switches outside vent ON
+s d3 On 0 #switches inside vent off
+s d3 Mode 0 #sets inside vent to storage
+l r0 d0 Pressure
+bgt r0 0 m2depre #if internal pressure > 0 loop
+m2press:
+s d2 On 0 #switches outside vent off
+s d3 On 1 #switches inside vent ON
+l r5 d5 Pressure #read tank pressure
+beq r5 0 mode3 #if tank pressure MT jump to mode3
+j m2press
+
+mode3: #internal atmosphere
+s d1 Setting 3 #sets mode 3 to surrounding devices
+l r4 d4 Setting
+beq r4 1 mode4
+s d2 On 0 #sets outside vent off
+s d2 Mode 1 #sets outside vent to blow off
+s d3 On 0 #sets inside vent off
+s d3 Mode 1 #sets inside vent to storage
+j mode3
+
+mode4: #depressurising to external
+s d1 Setting 4 #sets mode 4 to surrounding devices
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+yield
+m4depre:
+s d2 Mode 1 #sets outside vent to blow off
+s d2 On 0 #switches outside vent off
+s d3 Mode 1 #sets inside vent to storage
+s d3 On 1 #switches inside vent ON
+l r0 d0 Pressure
+beq r0 0 mode1
+j m4depre
+
+
+
+mode2select:
+l r0 d0 RatioOxygen
+bgt r0 0.1 m2press
+j m2depre
