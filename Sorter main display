@@ -1,0 +1,63 @@
+#silo plan
+
+#- Iron Ore
+#- Copper Ore
+#- Coal
+#- Silicon
+#- Gold Ore
+#- Silver Ore
+#- Lead Ore
+
+
+
+#d0 ore selector dial
+#d1 storage display
+s d0 Setting 0
+
+start:
+
+l r0 d0 Setting
+
+beq r0 0 none
+beq r0 1 iron
+beq r0 2 copper
+beq r0 3 coal
+beq r0 4 silicon
+beq r0 5 gold
+beq r0 6 silver
+beq r0 7 lead
+
+j start
+
+none:
+s db Setting 0
+s d1 Color 7
+j start
+
+iron:
+s db Setting 1758427767
+j start
+
+copper:
+s db Setting -707307845
+j start
+
+coal:
+s db Setting 1724793494
+j start
+
+silicon:
+s db Setting 1103972403
+j start
+
+gold:
+s db Setting -1348105509
+j start
+
+silver:
+s db Setting -916518678
+j start
+
+lead:
+s db Setting -190236170
+j start
