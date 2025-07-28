@@ -1,0 +1,42 @@
+#d0 ore selector
+#d1 Ore Stack Quantity
+#d2 Ore Stack Request
+#d3 Submit button
+#d4 silo 1
+#d5 
+#r6 future quantity
+
+
+start:
+l r0 d0 Setting #load ore selector dial
+
+beq r0 1 option1 #read iron from selector dial
+yield
+j start
+
+option1:
+s d1 Color 2 #set storage display color to green
+l r4 d4 Quantity #read quantity in silo
+s d1 Setting r4 #write quantity to display
+l r3 d3 Setting #check if request button is pressed
+beq r3 1 option1start #jump to startoperating if request button pressed
+l r0 d0 Setting #check ore selector dial
+bne r0 1 start #if selector dial is not 1 go back to idle
+j option1
+
+option1start:
+s d1 Color 4 #set storage display color to red
+l r2 d2 Setting #load amount requested from dial
+sub r6 r4 r2 #calculate future silo quantity (silo quantity-request dial)
+bgtz r6 start #if calculated future silo quantity is negative cancel operation and go to standby
+cycle1:
+ble r4 r6 stop1 #stop export when calculated amount equals or is lower than current quantity
+s d4 Open 1 #open silo and start exporting
+l r4 d4 Quantity #load current amount in silo
+j cycle1
+
+stop1:
+s d4 Open 0 #close silo
+s d4 ClearMemory 1 #clear silo export memory
+s d2 Setting 0
+j start
