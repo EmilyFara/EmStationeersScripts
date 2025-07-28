@@ -1,0 +1,34 @@
+#d0 gas sensor
+#d3 cool valve
+#d5 heat valve
+
+
+start:
+
+l r0 d0 Temperature #read temperature from gas sensor
+
+move r6 291
+move r7 298
+
+bgt r0 r6 heaton
+blt r0 r6 heatoff
+
+heaton:
+s d5 On 1
+j cool
+
+heatoff
+s d5 On 0
+j cool
+
+cool:
+bgt r0 r7 cooloff
+blt r0 r7 coolon
+
+cooloff:
+s d3 On 0
+j start
+
+coolon:
+s d3 On 1
+j start
